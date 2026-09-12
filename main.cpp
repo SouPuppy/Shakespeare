@@ -5,10 +5,12 @@
 
 int main() {
   Terminal terminal;
-  Screen screen;
+  size_t width = 0;
+  size_t height = 0;
   Editor editor;
 
-  if (!terminal.start()) return 1;
+  if (!terminal.start(width, height)) return 1;
+  Screen screen(width, height);
 
   for (;;) {
     editor.render(screen);

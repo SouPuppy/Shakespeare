@@ -20,12 +20,13 @@ struct Cell {
 };
 
 struct Screen {
-  static constexpr size_t width = 80;
-  static constexpr size_t height = 24;
+  size_t width;
+  size_t height;
 
   std::vector<Cell> cells;
 
-  Screen() : cells(width * height) {}
+  Screen(size_t screen_width, size_t screen_height)
+      : width(screen_width), height(screen_height), cells(width * height) {}
 
   void clear() {
     for (auto& cell : cells) {
@@ -67,7 +68,7 @@ struct Terminal {
   std::vector<Cell> previous_cells;
   bool has_previous = false;
 
-  bool start() {
+  bool start(size_t& width, size_t& height) {
     HANDLE output = GetStdHandle(STD_OUTPUT_HANDLE);
     DWORD output_mode = 0;
     if (!GetConsoleMode(output, &output_mode)) {
@@ -79,12 +80,11 @@ struct Terminal {
 
     CONSOLE_SCREEN_BUFFER_INFO info{};
     if (!GetConsoleScreenBufferInfo(output, &info)) return false;
-    const auto width = info.srWindow.Right - info.srWindow.Left + 1;
-    const auto height = info.srWindow.Bottom - info.srWindow.Top + 1;
-    if (width < static_cast<short>(Screen::width) || height < static_cast<short>(Screen::height)) return false;
+    width = info.srWindow.Right - info.srWindow.Left + 1;
+    height = info.srWindow.Bottom - info.srWindow.Top + 1;
     ansi::clear();
     ansi::hideCursor();
-    previous_cells.resize(Screen::width * Screen::height);
+    previous_cells.resize(width * height);
     has_previous = false;
     return true;
   }
@@ -95,9 +95,9 @@ struct Terminal {
   }
 
   void present(const Screen& screen, size_t cursor_row, size_t cursor_column) {
-    for (size_t row = 0; row < Screen::height; row++) {
-      for (size_t column = 0; column < Screen::width; column++) {
-        const size_t index = row * Screen::width + column;
+    for (size_t row = 0; row < screen.height; row++) {
+      for (size_t column = 0; column < screen.width; column++) {
+        const size_t index = row * screen.width + column;
         if (!has_previous || previous_cells[index].character != screen.cells[index].character) {
           ansi::cursor(row, column);
           std::cout << screen.cells[index].character;
@@ -106,7 +106,7 @@ struct Terminal {
       }
     }
 
-    ansi::cursor(std::min(cursor_row, Screen::height - 1), std::min(cursor_column, Screen::width - 1));
+    ansi::cursor(std::min(cursor_row, screen.height - 1), std::min(cursor_column, screen.width - 1));
     ansi::showCursor();
     std::cout.flush();
     has_previous = true;
