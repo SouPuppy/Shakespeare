@@ -1,0 +1,5 @@
+add_executable(lingo-desktop app/src/main.cpp)
+target_compile_features(lingo-desktop PRIVATE cxx_std_17)
+if(MSVC)
+  target_compile_options(lingo-desktop PRIVATE /W4 /permissive-)
+endif()

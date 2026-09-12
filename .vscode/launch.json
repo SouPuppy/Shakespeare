@@ -2,14 +2,27 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug Lingo",
+      "name": "Debug Lingo Desktop",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/lingo-editor/Debug/lingo.exe",
-      "args": [],
-      "stopAtEntry": false,
+      "program": "${workspaceFolder}/build/bin/Debug/lingo-desktop.exe",
       "cwd": "${workspaceFolder}",
-      "environment": [],
+      "console": "externalTerminal"
+    },
+    {
+      "name": "Debug Lingo Service",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/bin/Debug/lingo-service.exe",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Debug Lingo Editor",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/bin/Debug/lingo.exe",
+      "cwd": "${workspaceFolder}",
       "console": "externalTerminal"
     }
   ]

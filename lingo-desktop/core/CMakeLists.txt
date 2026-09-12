@@ -1,4 +1,4 @@
-add_library(lingo-core STATIC src/core.cpp)
+add_library(lingo-core STATIC src/core.cpp src/document.cpp)
 target_compile_features(lingo-core PUBLIC cxx_std_17)
 target_include_directories(lingo-core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 

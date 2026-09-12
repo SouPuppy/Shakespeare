@@ -1,0 +1,6 @@
+add_executable(lingo-service src/main.cpp)
+target_compile_features(lingo-service PRIVATE cxx_std_17)
+target_link_libraries(lingo-service PRIVATE lingo-core)
+if(MSVC)
+  target_compile_options(lingo-service PRIVATE /W4 /permissive-)
+endif()
