@@ -21,7 +21,7 @@
       "name": "Debug Lingo Editor",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/bin/Debug/lingo.exe",
+      "program": "${workspaceFolder}/build/bin/Debug/lingo-editor.exe",
       "cwd": "${workspaceFolder}",
       "console": "externalTerminal"
     }

@@ -1,38 +1,59 @@
 using System.IO;
 using System.IO.Pipes;
 using System.Text;
+using System.Text.Json;
 using System.Windows;
 
 namespace LingoUi;
 
 public partial class MainWindow : Window
 {
+    private CancellationTokenSource stop = new();
+
     public MainWindow()
     {
         InitializeComponent();
-        _ = Listen();
+        _ = ListenUntilClosed();
     }
 
-    private async Task Listen()
+    private async Task ListenUntilClosed()
+    {
+        while (!stop.IsCancellationRequested)
+        {
+            try
+            {
+                using var pipe = new NamedPipeClientStream(".", "lingo", PipeDirection.In);
+                await pipe.ConnectAsync(1000, stop.Token);
+                using var reader = new StreamReader(pipe, Encoding.UTF8);
+                SetStatus("Connected");
+                while (!stop.IsCancellationRequested && await reader.ReadLineAsync(stop.Token) is { } line) HandleMessage(line);
+            }
+            catch (OperationCanceledException) { return; }
+            catch { SetStatus("Waiting..."); await Task.Delay(250, stop.Token); }
+        }
+    }
+
+    private void HandleMessage(string line)
     {
         try
         {
-            using var pipe = new NamedPipeClientStream(".", "lingo", PipeDirection.In);
-            await pipe.ConnectAsync(3000);
-            using var reader = new StreamReader(pipe, Encoding.UTF8);
-            Status.Text = "Connected";
-            while (await reader.ReadLineAsync() is { } line)
+            using var message = JsonDocument.Parse(line);
+            var root = message.RootElement;
+            if (root.TryGetProperty("type", out var type) && type.GetString() == "focus")
             {
-                if (!line.Contains("\"sentence\"")) continue;
-                const string marker = "\"text\":\"";
-                var start = line.IndexOf(marker, StringComparison.Ordinal) + marker.Length;
-                var end = line.LastIndexOf('"');
-                if (start >= marker.Length && end > start) Sentence.Text = "Focus: " + line[start..end];
+                var sentence = root.TryGetProperty("sentence", out var sentenceValue) ? sentenceValue.GetString() ?? "" : "";
+                var word = root.TryGetProperty("word", out var wordValue) ? wordValue.GetString() ?? "" : "";
+                Dispatcher.Invoke(() => { Sentence.Text = sentence; Word.Text = word; });
             }
         }
-        catch
-        {
-            Status.Text = "Waiting...";
-        }
+        catch (JsonException) { }
+    }
+
+    private void SetStatus(string value) => Dispatcher.Invoke(() => Status.Text = value);
+
+    protected override void OnClosed(EventArgs e)
+    {
+        stop.Cancel();
+        base.OnClosed(e);
     }
 }
