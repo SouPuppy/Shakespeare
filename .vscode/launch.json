@@ -5,6 +5,7 @@
       "name": "Debug Lingo Desktop",
       "type": "cppvsdbg",
       "request": "launch",
+      "preLaunchTask": "Build Lingo",
       "program": "${workspaceFolder}/build/bin/Debug/lingo-desktop.exe",
       "cwd": "${workspaceFolder}",
       "console": "externalTerminal"

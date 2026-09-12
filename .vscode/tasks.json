@@ -1,0 +1,41 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build Lingo Native",
+      "type": "process",
+      "command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe",
+      "args": [
+        "--build",
+        "${workspaceFolder}/build",
+        "--config",
+        "Debug",
+        "--target",
+        "ALL_BUILD",
+        "-j",
+        "24"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "Build Lingo Popout",
+      "type": "process",
+      "command": "C:\\Program Files\\dotnet\\dotnet.exe",
+      "args": [
+        "build",
+        "${workspaceFolder}/lingo-desktop/app/popout/lingo-popout.csproj",
+        "--configuration",
+        "Debug"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "Build Lingo",
+      "dependsOn": [
+        "Build Lingo Native",
+        "Build Lingo Popout"
+      ],
+      "dependsOrder": "parallel"
+    }
+  ]
+}
