@@ -2,10 +2,10 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug Editor",
+      "name": "Debug Lingo",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/Debug/editor.exe",
+      "program": "${workspaceFolder}/build/lingo-editor/Debug/lingo.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
